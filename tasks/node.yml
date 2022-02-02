@@ -71,7 +71,7 @@
     enabled: yes
     masked: no
     state: started
-    when: ansible_facts['os_family'] != "Darwin"
+  when: ansible_facts['os_family'] != "Darwin"
 
 - name: Ensure Nebula service is enabled and running on macOS
   community.general.launchd:
