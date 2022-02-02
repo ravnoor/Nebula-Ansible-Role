@@ -1,7 +1,7 @@
 - name: Ensure a cert/key exists for each node on lighthouse
   command:
     chdir: /opt/nebula
-    cmd: ./nebula-cert sign -name "{{ inventory_hostname }}" -ip "{{ nebula_internal_ip_addr }}/{{ nebula_network_cidr }}" -duration "{{ nebula_client_cert_duration }}"
+    cmd: ./nebula-cert sign -name "{{ inventory_hostname }}" -ip "{{ nebula_internal_ip_addr }}/{{ nebula_network_cidr }}" -duration "{{ nebula_client_cert_duration }}" -groups "{{ nebula_groups}}"
     creates: "/opt/nebula/{{ inventory_hostname }}.crt"
   delegate_to: "{{ groups.nebula_lighthouse[0] }}"
 
@@ -47,6 +47,13 @@
     group: root
     mode: '0400'
   notify: Restart Nebula
+  when: ansible_facts['os_family'] != "Darwin"
+
+- name: Ensure Nebula is configured on macOS
+  template:
+    src: node.nebula.plist.j2
+    dest: /Library/LaunchDaemons/node.nebula.plist
+  when: ansible_facts['os_family'] == "Darwin"
 
 - name: Ensure Nebula service exists
   template:
@@ -55,6 +62,7 @@
     owner: root
     group: root
     mode: '0644'
+  when: ansible_facts['os_family'] != "Darwin"
 
 - name: Ensure Nebula service is enabled and running
   systemd: 
@@ -63,6 +71,13 @@
     enabled: yes
     masked: no
     state: started
+    when: ansible_facts['os_family'] != "Darwin"
+
+- name: Ensure Nebula service is enabled and running on macOS
+  community.general.launchd:
+    name: node.nebula
+    state: started
+  when: ansible_facts['os_family'] == "Darwin"
 
 - name: Ensure nebula-check is present
   template:
@@ -71,11 +86,11 @@
     owner: root
     group: root
     mode: '0755'
-  when: nebula_install_check_cron|bool
+  when: nebula_install_check_cron|bool and ansible_facts['os_family'] != "Darwin"
 
 - name: Ensure nebula-check is scheduled via cron
   cron:
     name: "nebula-check"
     minute: "*/5"
     job: "/opt/nebula/nebula-check.sh"
-  when: nebula_install_check_cron|bool
+  when: nebula_install_check_cron|bool and ansible_facts['os_family'] != "Darwin"
