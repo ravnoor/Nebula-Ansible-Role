@@ -3,24 +3,26 @@
 "http://www.apple.com/DTDs/PropertyList-1.0.dtd" >
 <plist version='1.0'>
 <dict>
-<key>Label</key><string>Nebula</string>
-<key>ProgramArguments</key>
-<array>
-        <string>/opt/nebula/nebula</string>
+        <key>Label</key><string>Nebula</string>
+        <key>ProgramArguments</key>
+        <array>
+                <string>/opt/nebula/nebula</string>
 
-        <string>-service</string>
+                <string>-service</string>
 
-        <string>run</string>
+                <string>run</string>
 
-        <string>-config</string>
+                <string>-config</string>
 
-        <string>/opt/nebula/config.yml</string>
+                <string>/opt/nebula/config.yml</string>
+        </array>
 
-</array>
-
-<key>SessionCreate</key><false/>
-<key>KeepAlive</key><true/>
-<key>RunAtLoad</key><false/>
-<key>Disabled</key><false/>
+        <key>SessionCreate</key><false/>
+        <key>KeepAlive</key><true/>
+        <key>RunAtLoad</key><true/>
+        <key>StandardErrorPath</key>
+	<string>/usr/local/var/log/nebula.log</string>
+	<key>StandardOutPath</key>
+	<string>/usr/local/var/log/nebula.log</string>
 </dict>
 </plist>
