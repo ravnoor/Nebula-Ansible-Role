@@ -52,7 +52,7 @@
 - name: Ensure Nebula is configured on macOS
   template:
     src: node.nebula.plist.j2
-    dest: /Library/LaunchDaemons/node.nebula.plist
+    dest: "/Users/{{ ansible_user_id }}/Library/LaunchAgents/node.nebula.plist"
   when: ansible_facts['os_family'] == "Darwin"
 
 - name: Ensure Nebula service exists
@@ -76,7 +76,8 @@
 - name: Ensure Nebula service is enabled and running on macOS
   community.general.launchd:
     name: node.nebula
-    state: started
+    enabled: yes
+    state: reloaded
   when: ansible_facts['os_family'] == "Darwin"
 
 - name: Ensure nebula-check is present
